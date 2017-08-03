@@ -17,8 +17,35 @@
         <textarea name="content" id="content"></textarea>
         <input type="submit" id="submit-article">
     </form>
+    <section id="articles">
+
+    </section>
     <script>
         "use strict";
+
+        function display() {
+            let section = document.querySelector("#articles");
+            section.innerHTML = "";
+            fetch("http://192.168.1.152:8080/articles/toto/desc").then(function(response) {
+                console.log(response.status);
+                return response.json();
+            }).then(function(json) {
+                console.log(json);
+                for (let o of json) {
+                    let article = document.createElement("article");
+                    let h2 = document.createElement("h2");
+                    let p = document.createElement("p");
+                    h2.textContent = o.title;
+                    p.textContent = o.content;
+                    article.appendChild(h2);
+                    article.appendChild(p);
+                    section.appendChild(article);
+                }
+            }).catch(function(error) {
+                console.error(error);
+            });
+        }
+        display();
         let submit = document.querySelector("#submit-article");
         submit.addEventListener("click", function(e) {
             e.preventDefault();
@@ -28,7 +55,7 @@
                 title: title,
                 content: content
             });
-            fetch("http://192.168.1.152:8080/article/?id=toto", {
+            fetch("http://192.168.1.152:8080/article/toto/", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
@@ -39,6 +66,7 @@
                 return response.text();
             }).then(function(text) {
                 console.log(text);
+                display();
             }).catch(function(error) {
                 console.error(error);
             })
